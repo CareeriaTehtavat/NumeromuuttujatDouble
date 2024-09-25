@@ -1,6 +1,3 @@
-
-
-
 using HelloWorld; // Ensure this is the correct namespace for the Program class
 using Microsoft.VisualStudio.TestPlatform.TestHost;
 using System.Reflection;
@@ -10,9 +7,7 @@ namespace HelloWorldTest
 {
     public class UnitTest1
     {
-
-
-        //Harjoitus - PeruslaskutNumeromuuttujilla
+        // Harjoitus - PeruslaskutNumeromuuttujilla
         [Fact]
         [Trait("TestGroup", "NumeromuuttujatDouble")]
         public void NumeromuuttujatDouble()
@@ -20,7 +15,6 @@ namespace HelloWorldTest
             // Arrange
             using var sw = new StringWriter();
             Console.SetOut(sw);
-
 
             // Set a timeout of 30 seconds for the test execution
             var cancellationTokenSource = new CancellationTokenSource();
@@ -42,9 +36,14 @@ namespace HelloWorldTest
 
                 var resultLines = result.Split(new[] { "\r\n", "\n" }, StringSplitOptions.None);
 
-                Assert.True(LineContainsIgnoreSpaces(resultLines[0], "10,55,5"), "Line does not contain expected text: " + resultLines[0] + "\n expected: " + " 5,510,5");
-                Assert.True(LineContainsIgnoreSpaces(resultLines[1], "10,5 5,5"), "Line does not contain expected text: " + resultLines[1]);
-                Assert.True(LineContainsIgnoreSpaces(resultLines[2], " 16"), "Line does not contain expected text: " + resultLines[2]);
+                Assert.True(LineContainsIgnoreSpaces(resultLines[0], "10,55,5"), 
+                    $"Line does not contain expected text: '{resultLines[0]}'\n expected: '10,55,5' or '10.55.5'");
+
+                Assert.True(LineContainsIgnoreSpaces(resultLines[1], "10,5 5,5"), 
+                    $"Line does not contain expected text: '{resultLines[1]}'\n expected: '10,5 5,5' or '10.5 5.5'");
+
+                Assert.True(LineContainsIgnoreSpaces(resultLines[2], "16"), 
+                    $"Line does not contain expected text: '{resultLines[2]}'\n expected: '16'");
             }
             catch (OperationCanceledException)
             {
@@ -59,11 +58,12 @@ namespace HelloWorldTest
                 cancellationTokenSource.Dispose();
             }
         }
+
         private bool LineContainsIgnoreSpaces(string line, string expectedText)
         {
-            // Remove all whitespace from the line and the expected text
-            string normalizedLine = Regex.Replace(line, @"\s+", "");
-            string normalizedExpectedText = Regex.Replace(expectedText, @"\s+", "");
+            // Remove all whitespace and normalize the decimal separators (convert both , and . to .)
+            string normalizedLine = Regex.Replace(line, @"\s+", "").Replace(',', '.');
+            string normalizedExpectedText = Regex.Replace(expectedText, @"\s+", "").Replace(',', '.');
             return normalizedLine.Contains(normalizedExpectedText);
         }
 
@@ -89,9 +89,5 @@ namespace HelloWorldTest
 
             return true;
         }
-
     }
 }
-
-
-
